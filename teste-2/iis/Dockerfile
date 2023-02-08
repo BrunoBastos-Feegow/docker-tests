@@ -18,6 +18,17 @@ RUN Install-WindowsFeature Web-ASP; \
     New-ItemProperty -Path HKLM:\software\microsoft\WebManagement\Server -Name EnableRemoteManagement -Value 1 -Force; \
     Set-Service -Name wmsvc -StartupType automatic;
 
+#enable client side debugging, parent paths etc
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /appAllowDebugging:true /commit:apphost
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /appAllowClientDebug:true /commit:apphost
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /enableParentPaths:true /commit:apphost
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /scriptErrorSentToBrowser:true /commit:apphost
+
+#add index.asp to the list of default documents
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument /enabled:true /commit:apphost
+#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument/files .[value='index.asp'].enabled:true /commit:apphost
+
+
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/asp
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/handlers
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/modules
