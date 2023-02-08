@@ -1,0 +1,36 @@
+version: '3'
+services:
+  web:
+    container_name: feegow-web
+    build:
+        context: iis
+        dockerfile: Dockerfile
+    image: asp-classic:feegow
+    ports:
+      - "880:80"
+      - "8172:8172"
+    networks:
+      feegow:
+        ipv4_address: 1.1.1.2
+    environment:
+      - FC_MYSQL_HOST=localhost
+      - FC_MYSQL_USER=root
+      - FC_MYSQL_PASSWORD=""
+      - FC_MASTER=123456
+      - FC_MYSQL_DATABASE=cliniccentral
+      - FC_MYSQL_DRIVER="MySQL ODBC 8.0 ANSI Driver"
+      - FC_PWD_SALT=F33g0W_Pwd4_
+      #- FC_SRC_PATH="C:/inetpub/wwwroot"
+      - FC_APP_ENV=local
+    volumes:
+      - C:/Users/19926/VSCodeProjects/feegowclinic-v7:C:/inetpub/wwwroot
+#    command:
+
+
+networks:
+    feegow:
+        driver: nat
+        ipam:
+            driver: default
+            config:
+                - subnet: 1.1.0.0/16
