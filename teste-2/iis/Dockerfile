@@ -16,7 +16,8 @@ RUN Install-WindowsFeature Web-ASP; \
     Import-Module ServerManager; Add-WindowsFeature Web-Scripting-Tools; \
     Import-Module WebAdministration; \
     New-ItemProperty -Path HKLM:\software\microsoft\WebManagement\Server -Name EnableRemoteManagement -Value 1 -Force; \
-    Set-Service -Name wmsvc -StartupType automatic;
+    Set-Service -Name wmsvc -StartupType automatic; \
+    Get-IISConfigSection -SectionPath system.webServer/defaultDocument | Get-IISConfigCollection -CollectionName files | New-IISConfigCollectionElement -ConfigAttribute @{'Value' = 'index.asp'} "
 
 #enable client side debugging, parent paths etc
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /appAllowDebugging:true /commit:apphost
@@ -40,8 +41,14 @@ RUN net user iisadmin "Password~1234" /ADD; \
     net localgroup administrators iisadmin /add;
 
 #RUN md c:/inetpub/wwwroot/feegowclinic-v7
+#remove Default Web Site
+RUN md c:\inetpub\wwwroot\feegowclinic-v7; \
+    New-IISSite -Name "feegowclinic-v7" -PhysicalPath 'c:\inetpub\wwwroot\feegowclinic-v7' -BindingInformation "*:880:"; \
+    New-WebVirtualDirectory -Site 'feegowclinic-v7' -Name "feegowclinic-v7" -PhysicalPath "C:\inetpub\wwwroot\feegowclinic-v7";
+
 RUN icacls "C:\inetpub\wwwroot" --% /grant "everyone:(OI)(CI)F /T"
-#RUN icacls "C:\inetpub\wwwroot\*" --% /grant "everyone:(OI)(CI)F /T"
+RUN icacls "C:\inetpub\wwwroot\feegowclinic-v7" --% /grant "everyone:(OI)(CI)F /T"
+
 
 RUN md c:/msi;
 COPY msi c:/msi

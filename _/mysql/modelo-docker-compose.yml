@@ -1,0 +1,44 @@
+name: "feegow-sbis-2022-final"
+version: "7.0"
+services:
+#  php:
+#    build: ../../../php/
+#    ports:
+#      - "443:443"
+#      - "8080:80"
+#    volumes:
+#      - ../../../../feegow_components:/var/www/html
+#    environment:
+#      - FC_APP_ENV=local
+#      - FC_MASTER=pipoca453
+#      - FC_MYSQL_DATABASE=cliniccentral
+#      - FC_MYSQL_HOST=127.0.0.1
+#      - FC_MYSQL_USER=root
+#      - FC_PWD_SALT=pdw_saltlocal
+#      - FC_SRC_PATH="/var/www/html/feegow_components"
+  db:
+    build:
+        context: ..
+    container_name: 'sbis-2022-final'
+    ports:
+      - "3306:3306"
+
+    environment:
+        MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        ROW_FORMAT: "DYNAMIC"
+        INNODB_DEFAULT_ROW_FORMAT: "dynamic"
+        SQL_MODE: "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+        INNODB_BUFFER_POOL_SIZE: "64M"
+        INNODB_LOG_FILE_SIZE: "5M"
+        INNODB_LOG_BUFFER_SIZE: "32M"
+        INNODB_FLUSH_LOG_AT_TRX_COMMIT: "1"
+        INNODB_LOCK_WAIT_TIMEOUT: "300"
+        TZ: "America/São Paulo"
+    command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" --max_allowed_packet=10240M --innodb_lock_wait_timeout=300
+    volumes:
+      - C:\.docker-mysql/sbis-2022-final:/var/lib/mysql:rw
+      - ../my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/clinic17983_20220903.sql:/docker-entrypoint-initdb.d/dump-clinic17983.sql
+      - ./db/cliniccentral_20220904.sql:/docker-entrypoint-initdb.d/dump-cliniccentral.sql
+
+
