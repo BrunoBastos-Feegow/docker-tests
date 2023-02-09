@@ -23,7 +23,9 @@ services:
       #- FC_SRC_PATH="C:/inetpub/wwwroot"
       - FC_APP_ENV=local
     volumes:
-      - C:/Users/bruno/VSCodeProjects/feegowclinic-v7:C:/inetpub/wwwroot/feegowclinic-v7
+#      - C:/Users/bruno/VSCodeProjects/feegowclinic-v7:C:/inetpub/wwwroot/feegowclinic-v7
+      - C:/Users/19926/VSCodeProjects/feegowclinic-v7:C:/inetpub/wwwroot
+#      - C:/Users/19926/VSCodeProjects/teste-docker:C:/inetpub/wwwroot
 
 networks:
     feegow:

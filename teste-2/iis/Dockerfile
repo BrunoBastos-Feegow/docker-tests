@@ -9,9 +9,9 @@ RUN Install-WindowsFeature Web-ASP; \
     Install-WindowsFeature Web-Includes; \
     Install-WindowsFeature Web-HTTP-Errors; \
     Install-WindowsFeature Web-Common-HTTP; \
+    Install-WindowsFeature Web-Mgmt-Service; \
     Install-WindowsFeature Web-Performance; \
     Install-WindowsFeature WAS; \
-    Install-WindowsFeature Web-Mgmt-Service; \
     Import-module IISAdministration; \
     Import-Module ServerManager; Add-WindowsFeature Web-Scripting-Tools; \
     Import-Module WebAdministration; \
@@ -24,6 +24,9 @@ RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServe
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /appAllowClientDebug:true /commit:apphost
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /enableParentPaths:true /commit:apphost
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /scriptErrorSentToBrowser:true /commit:apphost
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/httpErrors /errorMode:Detailed /commit:apphost
+#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.web/customErrors /mode:Off /commit:apphost
+#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.web/compilation /debug:true /commit:apphost
 
 #add index.asp to the list of default documents
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument /enabled:true /commit:apphost
@@ -42,18 +45,20 @@ RUN net user iisadmin "Password~1234" /ADD; \
 
 #RUN md c:/inetpub/wwwroot/feegowclinic-v7
 #remove Default Web Site
-RUN md c:\inetpub\wwwroot\feegowclinic-v7; \
-    New-IISSite -Name "feegowclinic-v7" -PhysicalPath 'c:\inetpub\wwwroot\feegowclinic-v7' -BindingInformation "*:880:"; \
-    New-WebVirtualDirectory -Site 'feegowclinic-v7' -Name "feegowclinic-v7" -PhysicalPath "C:\inetpub\wwwroot\feegowclinic-v7";
+#RUN md c:\inetpub\wwwroot\feegowclinic-v7; \
+#    New-IISSite -Name "feegowclinic-v7" -PhysicalPath 'c:\inetpub\wwwroot\feegowclinic-v7' -BindingInformation "*:880:"; \
+#    New-WebVirtualDirectory -Site 'feegowclinic-v7' -Name "feegowclinic-v7" -PhysicalPath "C:\inetpub\wwwroot\feegowclinic-v7";
 
 RUN icacls "C:\inetpub\wwwroot" --% /grant "everyone:(OI)(CI)F /T"
-RUN icacls "C:\inetpub\wwwroot\feegowclinic-v7" --% /grant "everyone:(OI)(CI)F /T"
+#RUN icacls "C:\inetpub\wwwroot\feegowclinic-v7" --% /grant "everyone:(OI)(CI)F /T"
 
 
 RUN md c:/msi;
 COPY msi c:/msi
-RUN Start-Process 'c:/msi/rewrite_amd64_en-US.msi' '/qn' -PassThru | Wait-Process;
-RUN Start-Process 'c:/msi/msodbcsql_x64.msi' '/qn' -PassThru | Wait-Process;
+#RUN Start-Process 'c:/msi/rewrite_amd64_en-US.msi' '/qn' -PassThru | Wait-Process;
+#RUN ["cmd", "/S", "/C", "c:\\windows\\syswow64\\msiexec", "/i", "c:\\msi\\mysql-connector-odbc-8.0.32-winx64.msi", "IACCEPTMSODBCSQLLICENSETERMS=YES", "ADDLOCAL=ALL", "/qn"]
+RUN Start-Process "msiexec.exe" -ArgumentList '/I c:/msi/rewrite_amd64_en-US.msi /quiet' -wait -nonewwindow
+RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\mysql-connector-odbc-8.0.32-winx64.msi /quiet' -wait -nonewwindow
 
 EXPOSE 880
 
@@ -68,7 +73,16 @@ RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webSe
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/modules
 
 #RUN Add-OdbcDsn -Name "mywebsite" \
-#                -DriverName "\"ODBC Driver 13 For SQL Server\"" \
+#                -DriverName "\"MySQL ODBC 8.0 ANSI Driver\"" \
 #                -DsnType "System" \
-#                -SetPropertyValue @("\"Server=XXXX.us-east-2.rds.amazonaws.com\"", "\"Trusted_Connection=No\"");
+#                -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
+RUN setx FC_MYSQL_HOST localhost -M; \
+    setx FC_MYSQL_USER root -M; \
+    setx FC_MYSQL_PASSWORD "" -M; \
+    setx FC_MASTER 123456 -M; \
+    setx FC_MYSQL_DATABASE cliniccentral -M; \
+    setx FC_MYSQL_DRIVER "MySQL ODBC 8.0 ANSI Driver" -M; \
+    setx FC_PWD_SALT F33g0W_Pwd4_ -M; \
+    setx FC_SRC_PATH "C:/inetpub/wwwroot" -M; \
+    setx FC_APP_ENV local -M;
