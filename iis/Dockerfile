@@ -82,7 +82,7 @@ RUN Add-OdbcDsn -Name "mywebsite" \
                 -DsnType "System" \
                 -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
-RUN setx FC_MYSQL_HOST localhost -M; \
+RUN setx FC_MYSQL_HOST "1.1.1.3" -M; \
     setx FC_MYSQL_USER root -M; \
 #    setx FC_MYSQL_PASSWORD "" -M; \
     setx FC_MASTER 123456 -M; \
