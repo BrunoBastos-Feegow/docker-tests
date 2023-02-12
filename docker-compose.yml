@@ -4,7 +4,7 @@ services:
     platform: windows
     container_name: feegow-web
     hostname: feegow-web
-    network_mode: bridge
+#    network_mode: nat
     build:
       context: iis
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
 #      feegow:
 #        ipv4_address: 1.1.1.2
     environment:
-      - FC_MYSQL_HOST=localhost
+      - FC_MYSQL_HOST=localhost:3307
       - FC_MYSQL_USER=root
       #- FC_MYSQL_PASSWORD=""
       - FC_MASTER=123456
@@ -28,20 +28,21 @@ services:
     volumes:
       - C:/Users/bruno/VSCodeProjects/feegowclinic-v7:C:/inetpub/wwwroot
     #      - C:/Users/19926/VSCodeProjects/teste-docker:C:/inetpub/wwwroot
-    depends_on:
-      - mysql
+#    depends_on:
+#      - mysql
 
   mysql:
     platform: linux/x86_64
     container_name: feegow-mysql
     hostname: feegow-mysql
-    network_mode: bridge
+#    network_mode: nat
     build:
       context: mysql
       dockerfile: Dockerfile
     image: mysql:5.7.38
     ports:
-      - "3306:3306"
+      - "3307:3306"
+#      - "33060:33060"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       ROW_FORMAT: "DYNAMIC"
@@ -54,9 +55,9 @@ services:
       INNODB_LOCK_WAIT_TIMEOUT: "300"
       TZ: "America/São Paulo"
     command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" --max_allowed_packet=10240M --innodb_lock_wait_timeout=300
-    volumes:
-      - ./mysql/conf.d:/etc/mysql/conf.d
-      - ./mysql/dumps:/docker-entrypoint-initdb.d
+#    volumes:
+#      - ./mysql/conf.d:/etc/mysql/conf.d
+#      - ./mysql/dumps:/docker-entrypoint-initdb.d
 #    networks:
 #      feegow:
 #        ipv4_address: 1.1.1.3
