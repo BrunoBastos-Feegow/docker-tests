@@ -1,13 +1,10 @@
-FROM --platform=linux php:7.4.24-apache
-STOPSIGNAL SIGTERM
+FROM --platform=linux php:7.4
+#STOPSIGNAL SIGTERM
 #RUN ["/bin/bash", "-c" ]
 #CMD ["/bin/bash"]
 #SHELL ["/bin/bash", "-c"]
 
-RUN ["/bin/bash", "-c", "apt-get update 2>&1"]
-
-
-#RUN apt-get update
+RUN apt-get update
 #RUN apt-get install -y --no-install-recommends locales default-mysql-client
 #RUN apt-get install -y --no-install-recommends bzip2 libbz2-dev libfreetype6-dev libjpeg62-turbo-dev
 #RUN apt-get install -y --no-install-recommends libpng-dev libicu-dev libxml2-dev libxslt-dev

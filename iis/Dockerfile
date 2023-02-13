@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 #RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-#RUN choco install -y mysql
+#RUN choco install -y php --version=7.4 --package-parameters='"/ThreadSafe ""/InstallDir:C:\PHP"""'
 
 RUN Install-WindowsFeature Web-ASP; \
     Install-WindowsFeature Web-CGI; \
@@ -53,19 +53,21 @@ RUN net user iisadmin "Password~1234" /ADD; \
 #    New-WebVirtualDirectory -Site 'feegowclinic-v7' -Name "feegowclinic-v7" -PhysicalPath "C:\inetpub\wwwroot\feegowclinic-v7";
 
 RUN Remove-Item 'C:\inetpub\wwwroot*' -Recurse -Force
-RUN icacls "C:\inetpub\wwwroot" --% /grant "everyone:(OI)(CI)F /T"
-#RUN icacls "C:\inetpub\wwwroot\feegowclinic-v7" --% /grant "everyone:(OI)(CI)F /T"
+RUN icacls "C:/inetpub/wwwroot" --% /grant "everyone:(OI)(CI)F /T"
 
+RUN md c:/feegow-api
+RUN icacls "c:/feegow-api" --% /grant "everyone:(OI)(CI)F /T"
 
 RUN md c:/msi;
 COPY msi c:/msi
+
+RUN md c:/xampp;
+COPY ../php/xampp c:/xampp
 #RUN Start-Process 'c:/msi/rewrite_amd64_en-US.msi' '/qn' -PassThru | Wait-Process;
 #RUN ["cmd", "/S", "/C", "c:\\windows\\syswow64\\msiexec", "/i", "c:\\msi\\mysql-connector-odbc-8.0.32-winx64.msi", "IACCEPTMSODBCSQLLICENSETERMS=YES", "ADDLOCAL=ALL", "/qn"]
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\rewrite_amd64_en-US.msi /quiet' -wait -nonewwindow
 RUN Start-Process -FilePath 'c:\msi\VC_redist.x64.exe' -ArgumentList '/quiet' -wait -nonewwindow
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\mysql-connector-odbc-8.0.32-winx64.msi /quiet' -wait -nonewwindow
-
-EXPOSE 880
 
 #RUN Remove-Website -Name 'Default Web Site'; \
 #    md c:\mywebsite; \
@@ -91,5 +93,5 @@ RUN setx FC_MYSQL_HOST "1.1.1.3" -M; \
     setx FC_PWD_SALT F33g0W_Pwd4_ -M; \
 #    setx FC_SRC_PATH 'C:/inetpub/wwwroot' -M; \
     setx FC_APP_ENV local -M;
-#RUN Find-Package mysql | Install-Package -Force -Confirm:$false
-#RUN Get-PackageSource mysql | Install-Package -Force -Confirm:$false
+
+EXPOSE 880
