@@ -8,3 +8,5 @@ ENV INNODB_LOG_FILE_SIZE="5M"
 ENV INNODB_LOG_BUFFER_SIZE="32M"
 ENV INNODB_FLUSH_LOG_AT_TRX_COMMIT="1"
 ENV INNODB_LOCK_WAIT_TIMEOUT="300"
+
+#run a query to update values in cliniccentral.db_servers

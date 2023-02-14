@@ -7,13 +7,9 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 RUN Install-WindowsFeature Web-ASP; \
     Install-WindowsFeature Web-CGI; \
-#    Install-WindowsFeature Web-ISAPI-Ext; \
     Install-WindowsFeature Web-ISAPI-Filter; \
     Install-WindowsFeature Web-Includes; \
-#    Install-WindowsFeature Web-HTTP-Errors; \
-#    Install-WindowsFeature Web-Common-HTTP; \
     Install-WindowsFeature Web-Mgmt-Service; \
-#    Install-WindowsFeature Web-Performance; \
     Install-WindowsFeature WAS; \
     Import-module IISAdministration; \
     Import-Module ServerManager; Add-WindowsFeature Web-Scripting-Tools; \
@@ -28,20 +24,6 @@ RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServe
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /enableParentPaths:true /commit:apphost
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/asp /scriptErrorSentToBrowser:true /commit:apphost
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/httpErrors /errorMode:Detailed /commit:apphost
-#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.web/customErrors /mode:Off /commit:apphost
-#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.web/compilation /debug:true /commit:apphost
-
-#add index.asp to the list of default documents
-RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument /enabled:true /commit:apphost
-#RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument/files .[value='index.asp'].enabled:true /commit:apphost
-
-
-RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/asp
-RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/handlers
-RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/modules
-
-#RUN Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.loadUserProfile' -Value 'True'; \
-#    Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.setProfileEnvironment' -Value 'True' ;
 
 RUN net user iisadmin "Password~1234" /ADD; \
     net localgroup administrators iisadmin /add;
@@ -63,35 +45,33 @@ COPY msi c:/msi
 
 RUN md c:/xampp;
 COPY xampp c:/xampp
-#RUN Start-Process 'c:/msi/rewrite_amd64_en-US.msi' '/qn' -PassThru | Wait-Process;
-#RUN ["cmd", "/S", "/C", "c:\\windows\\syswow64\\msiexec", "/i", "c:\\msi\\mysql-connector-odbc-8.0.32-winx64.msi", "IACCEPTMSODBCSQLLICENSETERMS=YES", "ADDLOCAL=ALL", "/qn"]
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\rewrite_amd64_en-US.msi /quiet' -wait -nonewwindow
 RUN Start-Process -FilePath 'c:\msi\VC_redist.x64.exe' -ArgumentList '/quiet' -wait -nonewwindow
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\mysql-connector-odbc-8.0.32-winx64.msi /quiet' -wait -nonewwindow
-
-#RUN Remove-Website -Name 'Default Web Site'; \
-#    md c:\mywebsite; \
-#    New-IISSite -Name "mywebsite" \
-#                -PhysicalPath 'c:\mywebsite' \
-#                -BindingInformation "*:8000:";
 
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/asp
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/handlers
 RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webServer/modules
 
-RUN Add-OdbcDsn -Name "mywebsite" \
+#add index.asp to the list of default documents
+RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument /enabled:true /commit:apphost
+#RUN Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.loadUserProfile' -Value 'True'; \
+#    Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.setProfileEnvironment' -Value 'True' ;
+
+RUN Add-OdbcDsn -Name "feegow" \
                 -DriverName "\"MySQL ODBC 8.0 ANSI Driver\"" \
                 -DsnType "System" \
                 -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
-RUN setx FC_MYSQL_HOST "1.1.1.3" -M; \
+RUN setx FC_MYSQL_HOST "feegow-mysql:3306" -M; \
     setx FC_MYSQL_USER root -M; \
-#    setx FC_MYSQL_PASSWORD "" -M; \
     setx FC_MASTER 123456 -M; \
     setx FC_MYSQL_DATABASE cliniccentral -M; \
     setx FC_MYSQL_DRIVER 'MySQL ODBC 8.0 ANSI Driver' -M; \
     setx FC_PWD_SALT F33g0W_Pwd4_ -M; \
-#    setx FC_SRC_PATH 'C:/inetpub/wwwroot' -M; \
-    setx FC_APP_ENV local -M;
+    setx FC_APP_ENV local -M; \
+    setx APP_URL "http://feegow-web:8000/" -M; \
+    setx APP_URL_TEST "http://feegow-web:8000/" -M
 
 EXPOSE 880
+
