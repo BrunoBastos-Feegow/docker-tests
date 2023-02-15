@@ -11,14 +11,19 @@ REQUIREMENTS
 BEFORE YOU START
 =====
 - switch Docker Desktop to use Windows Containers
+![image](https://user-images.githubusercontent.com/104787592/219053189-973f9253-f9a5-4bf0-8823-baf265ec5d9b.png)
+
 - enable experimental features in Docker Desktop settings
+![image](https://user-images.githubusercontent.com/104787592/219053303-babf5856-4374-4e0f-8329-f1837860dd44.png)
+
 - enable Hyper-V and Containers in Windows Features
+![image](https://user-images.githubusercontent.com/104787592/219053664-28f3eb48-edd0-4396-989e-d18109441214.png)
 
 RUNNING FEEGOW
 =====
 - clone this repository
 - Optional:
-  - put the dumpfiles in the ./mysql/dump folder
+  - put the dumpfiles in the ./mysql/dumps folder
       - note that importing the dumpfiles will take a <long> while
         - if you want to skip importing the dumpfiles, leave it alone and use your database manager to import the dumpfiles. 
         - I'm mapping port 3307 from the host machine to the mysql container, so you can use your database manager to connect to the database
