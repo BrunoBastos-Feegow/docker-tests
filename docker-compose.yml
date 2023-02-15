@@ -18,27 +18,24 @@ services:
       feegow:
         ipv4_address: 1.1.1.2
     environment:
-      - FC_MYSQL_HOST=feegow-mysql:3306
-      - FC_MYSQL_USER=root
-      - FC_MYSQL_PASSWORD=""
-      - FC_MASTER=123456
-      - FC_MYSQL_DATABASE=cliniccentral
-      - FC_MYSQL_DRIVER="MySQL ODBC 8.0 ANSI Driver"
-      - FC_PWD_SALT=F33g0W_Pwd4_
-      - FC_APP_ENV=local
-      - APP_URL="http://feegow-web:8000/"
-      - APP_URL_TEST="http://feegow-web:8000/"
+      FC_MYSQL_HOST=feegow-mysql: 3306
+      FC_MYSQL_USER: root
+      FC_MYSQL_PASSWORD: ""
+      FC_MASTER: 123456
+      FC_MYSQL_DATABASE: cliniccentral
+      FC_MYSQL_DRIVER: "MySQL ODBC 8.0 ANSI Driver"
+      FC_PWD_SALT: F33g0W_Pwd4_
+      FC_APP_ENV: local
+      APP_URL: "http://feegow-web:8000/"
+      APP_URL_TEST: "http://feegow-web:8000/"
     volumes:
       - C:\Users\bruno\VSCodeProjects\feegowclinic-v7:C:/inetpub/wwwroot
       - C:\Users\bruno\PhpstormProjects\feegow\feegow-api:C:/feegow-api
-#      - C:\Users\19926\VSCodeProjects\feegowclinic-v7:C:/inetpub/wwwroot
-#      - C:\Users\19926\PhpstormProjects\feegow-api:C:/feegow-api
     healthcheck:
       test: [ "CMD", "powershell", "-command", "Invoke-WebRequest -UseBasicParsing http://localhost:880 || exit 1" ]
       interval: 60s
       timeout: 30s
       retries: 30
-    command: powershell -command "Start-Process c:/xampp/php/php.exe -ArgumentList 'c:/feegow-api/artisan', 'serve', '--port=8000' -NoNewWindow;"
     depends_on:
       feegow-mysql:
         condition: service_healthy
@@ -70,11 +67,11 @@ services:
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
       - ./mysql/dumps:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p" ]
-      interval: 20s
-      timeout: 5s
-      retries: 5
+#    healthcheck:
+#      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p" ]
+#      interval: 20s
+#      timeout: 5s
+#      retries: 5
     networks:
       feegow:
         ipv4_address: 1.1.1.3
