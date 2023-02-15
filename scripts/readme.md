@@ -17,3 +17,7 @@ Scripts
 ### docker desktop
 - once swithed to windows containers, enable experimental features in settings
 ![image](https://user-images.githubusercontent.com/104787592/218258670-de65dd51-cd8a-4e3e-b339-d491210d8fee.png)
+
+TODO
+=====
+- make it work rs 
