@@ -31,14 +31,15 @@ services:
     volumes:
       - C:\Users\bruno\VSCodeProjects\feegowclinic-v7:C:/inetpub/wwwroot
       - C:\Users\bruno\PhpstormProjects\feegow\feegow-api:C:/feegow-api
-    healthcheck:
-      test: [ "CMD", "powershell", "-command", "Invoke-WebRequest -UseBasicParsing http://localhost:880 || exit 1" ]
-      interval: 60s
-      timeout: 30s
-      retries: 30
+#    healthcheck:
+#      test: [ "CMD", "powershell", "-command", "Invoke-WebRequest -UseBasicParsing http://localhost:880 || exit 1" ]
+#      interval: 60s
+#      timeout: 30s
+#      retries: 30
     depends_on:
-      feegow-mysql:
-        condition: service_healthy
+#      - feegow-mysql
+        feegow-mysql:
+          condition: service_healthy
 
   feegow-mysql:
     platform: linux/x86_64
@@ -63,15 +64,15 @@ services:
       INNODB_FLUSH_LOG_AT_TRX_COMMIT: "1"
       INNODB_LOCK_WAIT_TIMEOUT: "300"
       TZ: "America/São Paulo"
-    command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" --max_allowed_packet=10240M --innodb_lock_wait_timeout=300 && mysql -u root -e "UPDATE cliniccentral.db_servers SET DNS = 'feegow-mysql' WHERE id = 1;
+    command: mysqld --sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" --max_allowed_packet=10240M --innodb_lock_wait_timeout=300;
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
       - ./mysql/dumps:/docker-entrypoint-initdb.d
-#    healthcheck:
-#      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p" ]
-#      interval: 20s
-#      timeout: 5s
-#      retries: 5
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p" ]
+      interval: 30s
+      timeout: 15s
+      retries: 20
     networks:
       feegow:
         ipv4_address: 1.1.1.3
