@@ -2,8 +2,8 @@ version: '3'
 services:
   feegow-api:
     platform: linux/x86_64
-    container_name: feegow-api
-    hostname: feegow-api
+    container_name: feegow-api-tmp
+    hostname: feegow-api-tmp
     network_mode: nat
     image: php:7.4-apache
     command: >
