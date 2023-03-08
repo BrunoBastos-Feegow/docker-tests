@@ -27,7 +27,7 @@ RUNNING FEEGOW
       - note that importing the dumpfiles will take a <long> while
         - if you want to skip importing the dumpfiles, leave it alone and use your database manager to import the dumpfiles. 
         - I'm mapping port 3307 from the host machine to the mysql container, so you can use your database manager to connect to the database
-- adjust the paths in the docker-compose.yml (feegoe-web volumes) file to match your environment
+- adjust the paths in the docker-compose.yml (feegow-web volumes) file to match your environment
   - it's important to keep the bind mounts pointing to thw wwwroot folder as I wasn't able to handle permissions outdisde this folder 
 - open a terminal in the root of this repository
 - run `docker-compose up -d`
