@@ -42,7 +42,7 @@ MAPPINGS
 
 TODO
 =====
-- Write a dockerfile to build a php imegae with the required extensions
+- Write a dockerfile to build a php image with the required extensions
   - it looks like the php image from docker hub won't work in this environment due to the STOPSIGNAL sent to the host machine
   - for while, it will work with the php running on the host machine
   - map feegow-api folder, set it's variables etc so it can run in the container
