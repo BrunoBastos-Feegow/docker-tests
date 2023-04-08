@@ -29,8 +29,8 @@ services:
       APP_URL: "http://feegow-api/"
       APP_URL_TEST: "http://feegow-api/"
     volumes:
-      - C:\Users\19926\VSCodeProjects\feegowclinic-v7:C:/inetpub/wwwroot
-      - C:\Users\19926\PhpstormProjects\feegow-api:C:/feegow-api
+      - $HOME\VSCodeProjects\feegowclinic:C:/inetpub/wwwroot
+      - $HOME\PhpstormProjects\feegow-api:C:/feegow-api
     #    healthcheck:
     #      test: [ "CMD", "powershell", "-command", "Invoke-WebRequest -UseBasicParsing http://localhost:880 || exit 1" ]
     #      interval: 60s
@@ -84,16 +84,15 @@ services:
     container_name: feegow-api
     hostname: feegow-api
     network_mode: nat
-    image: feegow-api:php7.4
+    image: feegow-php
     command: >
       bash -c "composer install --no-dev --no-plugins && php artisan serve --port=80 --host=0.0.0.0"
-
-    #cp ./conf/php.ini /usr/local/etc/php/php.ini &&
-    #cp ./conf/apache.conf /etc/apache2/sites-available/000-default.conf
+    dns:
+      - 8.8.8.8
     ports:
       - "8000:80"
     volumes:
-      - C:/Users/19926/PhpstormProjects/feegow-api:/var/www/html
+      - $HOME/PhpstormProjects/feegow-api:/var/www/html
     networks:
       feegow:
         ipv4_address: 1.1.1.4
@@ -105,4 +104,3 @@ networks:
       driver: default
       config:
         - subnet: 1.1.0.0/16
-
