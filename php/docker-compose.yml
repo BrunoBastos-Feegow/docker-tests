@@ -6,6 +6,8 @@ services:
     hostname: feegow-api-tmp
     network_mode: nat
     image: php:7.4-apache
+    dns:
+      - 8.8.8.8
     command: >
       bash -c "
               apt-get update && 
