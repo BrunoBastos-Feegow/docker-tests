@@ -1,0 +1,25 @@
+version: '3'
+services:
+  feegow-web:
+    platform: windows
+    container_name: feegow-web
+    hostname: feegow-web
+    network_mode: nat
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: asp-classic:feegow
+    ports:
+      - "880:80"
+    environment:
+      FC_MYSQL_HOST: BRRJPE0AANM7 #host computer name
+      FC_MYSQL_HOST_DEV: BRRJPE0AANM7 #host computer name
+      FC_MYSQL_USER: root
+      FC_MYSQL_PASSWORD: ""
+      FC_MASTER: 123456
+      FC_MYSQL_DATABASE: cliniccentral
+      FC_MYSQL_DRIVER: "MySQL ODBC 8.0 ANSI Driver"
+      FC_PWD_SALT: F33g0W_Pwd4_
+      FC_APP_ENV: local
+    volumes:
+      - $HOME/VSCodeProjects/feegowclinic:C:/inetpub/wwwroot
