@@ -2,9 +2,6 @@ FROM mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-#RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-#RUN choco install -y php --version=7.4 --package-parameters='"/ThreadSafe ""/InstallDir:C:\PHP"""'
-
 RUN Install-WindowsFeature Web-ASP; \
     Install-WindowsFeature Web-CGI; \
     Install-WindowsFeature Web-ISAPI-Filter; \
@@ -28,23 +25,13 @@ RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServe
 RUN net user iisadmin "Password~1234" /ADD; \
     net localgroup administrators iisadmin /add;
 
-#RUN md c:/inetpub/wwwroot/feegowclinic-v7
-#remove Default Web Site
-#RUN md c:\inetpub\wwwroot\feegowclinic-v7; \
-#    New-IISSite -Name "feegowclinic-v7" -PhysicalPath 'c:\inetpub\wwwroot\feegowclinic-v7' -BindingInformation "*:880:"; \
-#    New-WebVirtualDirectory -Site 'feegowclinic-v7' -Name "feegowclinic-v7" -PhysicalPath "C:\inetpub\wwwroot\feegowclinic-v7";
-
 RUN Remove-Item 'C:\inetpub\wwwroot*' -Recurse -Force
-RUN icacls "C:\inetpub\wwwroot" --% /grant "everyone:(OI)(CI)F /T"
-
-RUN md c:/feegow-api
-RUN icacls "c:\feegow-api" --% /grant "everyone:(OI)(CI)F /T"
+RUN md c:/inetpub/wwwroot
+RUN icacls C:\inetpub\wwwroot /grant everyone:'(OI)(CI)F' /T
 
 RUN md c:/msi;
 COPY msi c:/msi
 
-RUN md c:/xampp;
-COPY xampp c:/xampp
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\rewrite_amd64_en-US.msi /quiet' -wait -nonewwindow
 RUN Start-Process -FilePath 'c:\msi\VC_redist.x64.exe' -ArgumentList '/quiet' -wait -nonewwindow
 RUN Start-Process "msiexec.exe" -ArgumentList '/I c:\msi\mysql-connector-odbc-8.0.32-winx64.msi /quiet' -wait -nonewwindow
@@ -55,23 +42,14 @@ RUN & c:\windows\system32\inetsrv\appcmd.exe unlock config /section:system.webSe
 
 #add index.asp to the list of default documents
 RUN & c:\windows\system32\inetsrv\appcmd.exe set config /section:system.webServer/defaultDocument /enabled:true /commit:apphost
-#RUN Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.loadUserProfile' -Value 'True'; \
-#    Set-ItemProperty -Path 'IIS:\AppPools\DefaultAppPool' -Name 'processModel.setProfileEnvironment' -Value 'True' ;
 
-RUN Add-OdbcDsn -Name "feegow" \
+RUN Add-OdbcDsn -Name "feegow_odbc_dsn" \
                 -DriverName "\"MySQL ODBC 8.0 ANSI Driver\"" \
                 -DsnType "System" \
                 -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
-RUN setx FC_MYSQL_HOST "feegow-mysql:3306" -M; \
-    setx FC_MYSQL_USER root -M; \
-    setx FC_MASTER 123456 -M; \
-    setx FC_MYSQL_DATABASE cliniccentral -M; \
-    setx FC_MYSQL_DRIVER 'MySQL ODBC 8.0 ANSI Driver' -M; \
-    setx FC_PWD_SALT F33g0W_Pwd4_ -M; \
-    setx FC_APP_ENV local -M; \
-    setx APP_URL "http://feegow-web:8000/" -M; \
-    setx APP_URL_TEST "http://feegow-web:8000/" -M
+# Copy the setenv.vbs script
+COPY setenv.vbs /setenv.vbs
 
-EXPOSE 880
-
+# Set the ENTRYPOINT to start IIS and keep it running
+ENTRYPOINT ["cmd", "/c", "cscript.exe", "//B", "//Nologo", "setenv.vbs", "&", "powershell", "-Command", "Start-Service W3SVC;", "while ($true) { Start-Sleep -Seconds 3600 }"]
