@@ -21,5 +21,20 @@ services:
       FC_MYSQL_DRIVER: "MySQL ODBC 8.0 ANSI Driver"
       FC_PWD_SALT: F33g0W_Pwd4_
       FC_APP_ENV: local
+      MONGO_CONNECTION_STRING: mongodb://mongo:27017/mydatabase # Connection string for MongoDB
     volumes:
       - $HOME/VSCodeProjects/feegowclinic:C:/inetpub/wwwroot
+    dns:
+      - 8.8.8.8
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mydata:

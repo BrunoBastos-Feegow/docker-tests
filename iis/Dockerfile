@@ -48,8 +48,13 @@ RUN Add-OdbcDsn -Name "feegow_odbc_dsn" \
                 -DsnType "System" \
                 -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
+RUN Install-Package Microsoft.Web.RedisSessionStateProvider -Version 2.2.2;
+
 # Copy the setenv.vbs script
 COPY setenv.vbs /setenv.vbs
 
 # Set the ENTRYPOINT to start IIS and keep it running
 ENTRYPOINT ["cmd", "/c", "cscript.exe", "//B", "//Nologo", "setenv.vbs", "&", "powershell", "-Command", "Start-Service W3SVC;", "while ($true) { Start-Sleep -Seconds 3600 }"]
+
+# Copy web.config to the root of the site
+COPY web.config /inetpub/wwwroot/web.config
