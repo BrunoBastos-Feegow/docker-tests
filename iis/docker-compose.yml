@@ -23,18 +23,24 @@ services:
       FC_APP_ENV: local
       MONGO_CONNECTION_STRING: mongodb://mongo:27017/mydatabase # Connection string for MongoDB
     volumes:
-      - $HOME/VSCodeProjects/feegowclinic:C:/inetpub/wwwroot
+      - $HOME/VSCodeProjects/feegow/feegowclinic:C:/inetpub/wwwroot
     dns:
       - 8.8.8.8
     depends_on:
       - redis
 
+#redis service definition for lcow
   redis:
-    image: redis
+    image: redis:latest
     container_name: redis
     hostname: redis
+    platform: linux
     ports:
       - "6379:6379"
+    volumes:
+      - $HOME/PhpstormProjects/feegow/docker-tests/iis/redis-data:/data
+
+
 
 volumes:
-  mydata:
+    redis-data:
