@@ -1,4 +1,3 @@
-version: '3'
 services:
   feegow-web:
     platform: windows
@@ -12,29 +11,29 @@ services:
     ports:
       - "880:80"
     environment:
-      FC_MYSQL_HOST: BRRJPE0AANM7 #host computer name
-      FC_MYSQL_HOST_DEV: BRRJPE0AANM7 #host computer name
-      FC_MYSQL_USER: root
-      FC_MYSQL_PASSWORD: ""
+      FC_MYSQL_HOST: BRRJPE0AANM7 #host.docker.internal
+      FC_MYSQL_HOST_DEV: BRRJPE0AANM7 #host.docker.internal
+      FC_MYSQL_USER: feegow
+      FC_MYSQL_PASSWORD: 1234
       FC_MASTER: 123456
       FC_MYSQL_DATABASE: cliniccentral
       FC_MYSQL_DRIVER: "MySQL ODBC 8.0 ANSI Driver"
       FC_PWD_SALT: F33g0W_Pwd4_
       FC_APP_ENV: local
-      MONGO_CONNECTION_STRING: mongodb://mongo:27017/mydatabase # Connection string for MongoDB
+#      MONGO_CONNECTION_STRING: mongodb://mongo:27017/mydatabase # Connection string for MongoDB
     volumes:
-      - $HOME/VSCodeProjects/feegowclinic:C:/inetpub/wwwroot
+      - D:/.projects/feegow/feegowclinic:C:/inetpub/wwwroot
     dns:
       - 8.8.8.8
-    depends_on:
-      - redis
+#    depends_on:
+#      - redis
 
-  redis:
-    image: redis
-    container_name: redis
-    hostname: redis
-    ports:
-      - "6379:6379"
+#  redis:
+#    image: redis
+#    container_name: redis
+#    hostname: redis
+#    ports:
+#      - "6379:6379"
 
-volumes:
-  mydata:
+#volumes:
+#  mydata:
