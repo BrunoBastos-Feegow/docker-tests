@@ -48,7 +48,7 @@ RUN Add-OdbcDsn -Name "feegow_odbc_dsn" \
                 -DsnType "System" \
                 -SetPropertyValue @("\"Server=localhost\"", "\"Trusted_Connection=No\"");
 
-RUN Install-Package Microsoft.Web.RedisSessionStateProvider -Version 2.2.2;
+# RUN Install-Package Microsoft.Web.RedisSessionStateProvider -Version 2.2.2;
 
 # Copy the setenv.vbs script
 COPY setenv.vbs /setenv.vbs
